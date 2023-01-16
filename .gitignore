@@ -39,3 +39,10 @@ Migrations/20230115120908_Init.Designer.cs
 Migrations/20230115120908_Init.cs
 HogwartsPotions.csproj
 HogwartsPotions.csproj
+Migrations/20230115153145_Init.cs
+Migrations/20230115153145_Init.Designer.cs
+.vs/HogwartsPotions/config/applicationhost.config
+Migrations/20230115160720_Init.Designer.cs
+Migrations/20230115160720_Init.cs
+appsettings.json
+appsettings.json

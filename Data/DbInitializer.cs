@@ -16,6 +16,7 @@ namespace HogwartsPotions.Data
                 return;
             }
 
+            //Initialize students
             var hermione = new Student
                 { Name = "Harry Potter", HouseType = HouseType.Gryffindor, PetType = PetType.Owl };
             var harry = new Student
@@ -26,6 +27,7 @@ namespace HogwartsPotions.Data
             context.Students.AddRange(students);
             context.SaveChanges();
 
+            //Initialize rooms
             var room1 = new Room { Capacity = 5, Residents = new HashSet<Student>()};
             var room2 = new Room { Capacity = 5, Residents = new HashSet<Student>()};
             var room3 = new Room { Capacity = 5, Residents = new HashSet<Student>() };
@@ -35,6 +37,28 @@ namespace HogwartsPotions.Data
             var rooms = new[] {room1, room2, room3, room4 };
             
             context.Rooms.AddRange(rooms);
+            context.SaveChanges();
+
+            //Initialize ingredients
+            var paprika = new Ingredient { Name = "Paprika" };
+            var paradicsom = new Ingredient { Name = "Paradicsom" };
+            var hagyma = new Ingredient { Name = "Vöröshagyma" };
+            var szalonna = new Ingredient { Name = "Szalonna" };
+            var so = new Ingredient { Name = "Só" };
+            var bors = new Ingredient { Name = "Bors" };
+            var husi = new Ingredient { Name = "Sertéscomb" };
+            var pirospaprika = new Ingredient { Name = "Pirospaprika" };
+
+            var ingredients = new[] { paprika, paradicsom, szalonna, so, bors, husi, pirospaprika, hagyma};
+            context.Ingredients.AddRange(ingredients);
+            context.SaveChanges();
+
+            //Initialize recipes
+            var lecso = new Recipe { Name = "Lecsó", Student = hermione, Ingredients = new HashSet<Ingredient> { paprika, paradicsom, szalonna, so, bors } };
+            var porkolt = new Recipe { Name = "Sertéspöri", Student = harry, Ingredients = new HashSet<Ingredient> { szalonna, hagyma, husi, paradicsom, so, bors, pirospaprika } };
+
+            var recipes = new[] { lecso, porkolt };
+            context.Recipes.AddRange(recipes);
             context.SaveChanges();
         }
     }

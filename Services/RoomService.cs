@@ -20,7 +20,6 @@ namespace HogwartsPotions.Services
         }
         public async Task<List<Room>> GetAllRooms()
         {
-            //return await _context.Rooms.ToListAsync();
             return await _context.Rooms.Include(r=>r.Residents).ToListAsync();
         }
 

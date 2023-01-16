@@ -8,7 +8,12 @@ namespace HogwartsPotions.Models.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         public string Name { get; set; }
-        public Student Student { get; set; }
         public HashSet<Ingredient> Ingredients { get; set; }
+        public Student Student { get; set; }
+
+        public Recipe()
+        {
+            Ingredients = new HashSet<Ingredient>();
+        }
     }
 }
