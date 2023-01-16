@@ -17,9 +17,9 @@ namespace HogwartsPotions.Data
             }
 
             //Initialize students
-            var hermione = new Student
-                { Name = "Harry Potter", HouseType = HouseType.Gryffindor, PetType = PetType.Owl };
             var harry = new Student
+                { Name = "Harry Potter", HouseType = HouseType.Gryffindor, PetType = PetType.Owl };
+            var hermione = new Student
                 { Name = "Hermione Granger", HouseType = HouseType.Gryffindor, PetType = PetType.Cat };
             
             var students = new[] { harry, hermione };
@@ -55,10 +55,25 @@ namespace HogwartsPotions.Data
 
             //Initialize recipes
             var lecso = new Recipe { Name = "Lecsó", Student = hermione, Ingredients = new HashSet<Ingredient> { paprika, paradicsom, szalonna, so, bors } };
-            var porkolt = new Recipe { Name = "Sertéspöri", Student = harry, Ingredients = new HashSet<Ingredient> { szalonna, hagyma, husi, paradicsom, so, bors, pirospaprika } };
+            var porkolt = new Recipe { Name = "Sertéspöri", Student = harry, Ingredients = new HashSet<Ingredient> { szalonna, hagyma, husi, paradicsom, so } };
 
             var recipes = new[] { lecso, porkolt };
             context.Recipes.AddRange(recipes);
+            context.SaveChanges();
+
+            var potions = new Potion[]
+            {
+                new()
+                {
+                    Status = BrewingStatus.Discovery,
+                    BrewStudent = harry,
+                    Recipe = porkolt,
+                    Ingredients = new HashSet<Ingredient>
+                        { szalonna, hagyma, husi, paradicsom, so },
+                }
+            };
+
+            context.Potions.AddRange(potions);
             context.SaveChanges();
         }
     }

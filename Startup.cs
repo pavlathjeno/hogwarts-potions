@@ -26,11 +26,15 @@ namespace HogwartsPotions
         {
             services.AddDbContext<HogwartsContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
             services.AddControllersWithViews();
             services.AddTransient<IRoomService, RoomService>();
             services.AddTransient<IStudentService, StudentService>();
+            services.AddTransient<IPotionService, PotionService>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
