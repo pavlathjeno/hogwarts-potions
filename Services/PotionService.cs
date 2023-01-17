@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HogwartsPotions.Models;
 using HogwartsPotions.Models.Entities;
@@ -21,14 +22,49 @@ namespace HogwartsPotions.Services
                 .Include(p => p.Ingredients)
                 .Include(p => p.BrewStudent)
                 .Include(p => p.Recipe)
-                .ThenInclude(r => r.Ingredients)
-                .Include(potion => potion.Recipe).ThenInclude(r => r.Student).ThenInclude(s => s.Room)
                 .ToListAsync();
         }
 
-        public Task<Potion> AddPotion(Potion potion)
+        public async Task<Potion> AddPotion(Potion potion, Student brewerStudent)
         {
-            throw new System.NotImplementedException();
+            Potion newPotion = new Potion();
+            newPotion.BrewStudent = brewerStudent;
+            if (IsPotionReplica(potion))
+            {
+                newPotion.Status = BrewingStatus.Replica;
+                newPotion.Recipe = GetRecipeByIngredients(potion.Ingredients);
+                newPotion.Ingredients = newPotion.Recipe.Ingredients;
+            }
+            else
+            {
+                newPotion.Status = BrewingStatus.Discovery;
+                newPotion.Ingredients = potion.Ingredients;
+                newPotion.Recipe = NewRecipeByPotion(newPotion);
+            }
+            newPotion.Name = $"{brewerStudent.Name}'s {newPotion.Status} potion #{OccurrencesCounter(newPotion)}";
+            await _context.AddAsync(newPotion);
+            await _context.SaveChangesAsync();
+            return newPotion;
+        }
+
+        public Recipe NewRecipeByPotion(Potion potion)
+        {
+            Recipe newRecipe = new Recipe();
+            newRecipe.Ingredients = potion.Ingredients;
+            newRecipe.Student = potion.BrewStudent;
+            newRecipe.Name = $"{potion.BrewStudent.Name}'s recipe #{OccurrencesCounter(potion)}";
+            return newRecipe;
+        }
+
+        public int OccurrencesCounter(Potion potion)
+        {
+            {
+                int baseIndex = 1;
+                int count = _context.Potions.Count(p => 
+                    p.BrewStudent == potion.BrewStudent && 
+                    p.Status == potion.Status) + baseIndex;
+                return count;
+            }
         }
 
         public Task<Potion> BrewPotion(Student student, Ingredient ingredient)
@@ -51,9 +87,13 @@ namespace HogwartsPotions.Services
             throw new System.NotImplementedException();
         }
 
-        public Task IsPotionReplica(Potion potion)
+        public bool IsPotionReplica(Potion potion)
         {
-            throw new System.NotImplementedException();
+            return _context.Recipes.Include(r=>r.Ingredients).AsEnumerable()
+                .Any(r=>r.Ingredients
+                    .Select(i=>i.Name).OrderBy(x=>x)
+                    .SequenceEqual(potion.Ingredients
+                        .Select(i=>i.Name).OrderBy(y=>y)));
         }
 
         public Task AddNewRecipe(Student student, Ingredient ingredient)
@@ -69,6 +109,19 @@ namespace HogwartsPotions.Services
         public Task<List<Potion>> GetPotionsByStudent(long studentId)
         {
             throw new System.NotImplementedException();
+        }
+
+        public Recipe GetRecipeByIngredients(HashSet<Ingredient> ingredients)
+        {
+            return _context.Recipes
+                .Include(recipe => recipe.Ingredients)
+                .AsEnumerable()
+                .FirstOrDefault(recipe => recipe.Ingredients
+                    .Select(ingredient => ingredient.Name)
+                    .OrderBy(x => x)
+                    .SequenceEqual(ingredients
+                        .Select(ingredient => ingredient.Name)
+                        .OrderBy(y => y)));
         }
     }
 }

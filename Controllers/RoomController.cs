@@ -33,8 +33,6 @@ namespace HogwartsPotions.Controllers
         {
             await _context.Rooms.AddAsync(room);
             await _context.SaveChangesAsync();
-            //await _roomService.AddRoom(room);
-            //return CreatedAtAction("AddRoom", room);
         }
 
         [HttpGet("rooms/{id:long}")]

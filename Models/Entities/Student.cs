@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices.ComTypes;
+using System.Text.Json.Serialization;
 using HogwartsPotions.Models.Enums;
 
 namespace HogwartsPotions.Models.Entities
@@ -12,6 +13,7 @@ namespace HogwartsPotions.Models.Entities
         public string Name { get; set; }
         public HouseType HouseType { get; set; }
         public PetType PetType { get; set; }
+        [JsonIgnore]
         public Room Room { get; set; }
     }
 }

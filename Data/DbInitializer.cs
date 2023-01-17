@@ -55,7 +55,7 @@ namespace HogwartsPotions.Data
 
             //Initialize recipes
             var lecso = new Recipe { Name = "Lecsó", Student = hermione, Ingredients = new HashSet<Ingredient> { paprika, paradicsom, szalonna, so, bors } };
-            var porkolt = new Recipe { Name = "Sertéspöri", Student = harry, Ingredients = new HashSet<Ingredient> { szalonna, hagyma, husi, paradicsom, so } };
+            var porkolt = new Recipe { Name = "Sertéspöri", Student = harry, Ingredients = new HashSet<Ingredient> { szalonna, hagyma, husi, pirospaprika, so } };
 
             var recipes = new[] { lecso, porkolt };
             context.Recipes.AddRange(recipes);
@@ -69,7 +69,7 @@ namespace HogwartsPotions.Data
                     BrewStudent = harry,
                     Recipe = porkolt,
                     Ingredients = new HashSet<Ingredient>
-                        { szalonna, hagyma, husi, paradicsom, so },
+                        { szalonna, hagyma, husi, pirospaprika, so },
                 }
             };
 

@@ -8,9 +8,8 @@ namespace HogwartsPotions.Models.Entities
     public class Potion
     {
         public long Id { get; set; }
-        [Required(ErrorMessage = "Brewer student is required!")]
         public Student BrewStudent { get; set; }
-        public string Name => $"{BrewStudent.Name}'s potion.";
+        public string Name { get; set; }
         public HashSet<Ingredient> Ingredients { get; set; }
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public BrewingStatus Status { get; set; } = BrewingStatus.Brew;

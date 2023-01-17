@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HogwartsPotions.Models;
 using HogwartsPotions.Models.Entities;
@@ -23,7 +23,7 @@ namespace HogwartsPotions.Services
                 .ToListAsync();
         }
 
-        public async Task<Student> GetStudentById(int id)
+        public async Task<Student> GetStudentById(long id)
         {
             return await _context.Students
                 .Include(s => s.Room)

@@ -27,5 +27,11 @@ namespace HogwartsPotions.Controllers
         {
             return await _potionService.GetAllPotion();
         }
+        [HttpPost("potions")]
+        public async Task AddPotion([FromBody] Potion potion)
+        {
+            var student = await _studentService.GetStudentById(potion.BrewStudent.Id);
+            await _potionService.AddPotion(potion, student);
+        }
     }
 }
