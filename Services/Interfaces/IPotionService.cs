@@ -20,5 +20,6 @@ namespace HogwartsPotions.Services.Interfaces
         Recipe GetRecipeByIngredients(HashSet<Ingredient> ingredients);
         Recipe NewRecipeByPotion(Potion potion);
         int OccurrencesCounter(Potion potion);
+        Task<List<Potion>> GetPotionByStudent(long studentId);
     }
 }
