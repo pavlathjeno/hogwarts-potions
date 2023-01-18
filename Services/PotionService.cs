@@ -25,10 +25,10 @@ namespace HogwartsPotions.Services
                 .ToListAsync();
         }
 
-        public async Task<Potion> AddPotion(Potion potion, Student brewerStudent)
+        public async Task<Potion> AddPotion(Potion potion)
         {
             Potion newPotion = new Potion();
-            newPotion.BrewStudent = brewerStudent;
+            newPotion.BrewStudent = potion.BrewStudent;
             if (IsPotionReplica(potion))
             {
                 newPotion.Status = BrewingStatus.Replica;
@@ -38,15 +38,48 @@ namespace HogwartsPotions.Services
             else
             {
                 newPotion.Status = BrewingStatus.Discovery;
-                newPotion.Ingredients = potion.Ingredients;
-                newPotion.Recipe = NewRecipeByPotion(newPotion);
+                newPotion.Recipe = NewRecipeByPotion(potion);
+                var correctIngredients = await GetCorrectIngredients(potion);
+                newPotion.Ingredients = correctIngredients.Ingredients;
             }
-            newPotion.Name = $"{brewerStudent.Name}'s {newPotion.Status} potion #{OccurrencesCounter(newPotion)}";
+            newPotion.Name = $"{newPotion.BrewStudent.Name}'s {newPotion.Status} potion #{OccurrencesCounter(newPotion)}";
             await _context.AddAsync(newPotion);
             await _context.SaveChangesAsync();
             return newPotion;
         }
+        private async Task<Potion> GetCorrectIngredients(Potion potion)
+        {
+            Potion newPotion = new Potion();
+            foreach (var ingredient in potion.Ingredients)
+            {
+                if (!IsIngredientPersisted(ingredient))
+                {
+                    await AddNewIngredient(ingredient);
+                    newPotion.Ingredients.Add(ingredient);
+                }
+                else
+                {
+                    var existingIngredient = await GetIngredientByName(ingredient);
+                    newPotion.Ingredients.Add(existingIngredient);
+                }
+            }
+            return newPotion;
+        }
+        private async Task<Ingredient> GetIngredientByName(Ingredient ingredient)
+        {
+            return await _context.Ingredients.FirstOrDefaultAsync(i => i.Name == ingredient.Name);
+        }
+        private bool IsIngredientPersisted(Ingredient ingredient)
+        {
+            return _context.Ingredients.Any(i => i.Name == ingredient.Name);
+        }
 
+
+        public async Task AddNewIngredient(Ingredient ingredient)
+        {
+            await _context.Ingredients.AddAsync(ingredient);
+            await _context.SaveChangesAsync();
+        }
         public Recipe NewRecipeByPotion(Potion potion)
         {
             Recipe newRecipe = new Recipe();
@@ -65,6 +98,11 @@ namespace HogwartsPotions.Services
                     p.Status == potion.Status) + baseIndex;
                 return count;
             }
+        }
+
+        public async Task<List<Potion>> GetPotionByStudent(long studentId)
+        {
+            return await _context.Potions.Where(p => p.BrewStudent.Id == studentId).ToListAsync();
         }
 
         public Task<Potion> BrewPotion(Student student, Ingredient ingredient)
@@ -106,9 +144,13 @@ namespace HogwartsPotions.Services
             throw new System.NotImplementedException();
         }
 
-        public Task<List<Potion>> GetPotionsByStudent(long studentId)
+        public async Task<List<Potion>> GetPotionsByStudent(long studentId)
         {
-            throw new System.NotImplementedException();
+            return await _context.Potions
+                .Include(p => p.Ingredients)
+                .Include(p => p.Recipe)
+                .Where(p=>p.BrewStudent.Id == studentId)
+                .ToListAsync();
         }
 
         public Recipe GetRecipeByIngredients(HashSet<Ingredient> ingredients)
